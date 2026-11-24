@@ -1,0 +1,11 @@
+node_modules
+.next
+out
+.env*.local
+.vercel
+.netlify
+next-env.d.ts
+*.tsbuildinfo
+
+# Copia original de la música (la web usa public/audio/musica.mp3)
+/Indochine*.mp3

@@ -147,16 +147,8 @@ export const invitation = {
       visible: true,
     },
     {
-      id: "recepcion",
-      time: null, // POR_DEFINIR
-      title: "Recepción de invitados",
-      description: "Te daremos la bienvenida con mucho cariño.",
-      icon: "users",
-      visible: true,
-    },
-    {
       id: "celebracion",
-      time: null, // POR_DEFINIR
+      time: "Luego",
       title: "Celebración y fiesta",
       description: "Brindemos juntos por este día tan especial.",
       icon: "party",

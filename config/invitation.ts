@@ -174,7 +174,7 @@ export const invitation = {
   rsvp: {
     /** Número con código de país, solo dígitos. Ej.: "51987654321".
      *  POR_DEFINIR: vacío => WhatsApp abre para elegir el contacto. */
-    whatsappNumber: "51953431010", // PRUEBA: reemplazar por el número definitivo
+    whatsappNumber: "51959709712",
     maxCompanions: 10,
   },
 

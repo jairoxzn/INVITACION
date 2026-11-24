@@ -26,7 +26,7 @@ const siteUrl =
   (process.env.VERCEL_PROJECT_PRODUCTION_URL
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : process.env.URL) ||
-  "http://localhost:3000";
+  "https://ceremonia-gisellamassiel-huaracha.vercel.app/";
 
 const { meta } = invitation;
 

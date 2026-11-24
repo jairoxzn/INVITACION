@@ -3,7 +3,8 @@
 import { motion, useScroll } from "framer-motion";
 import { Cake, Church, Music, PartyPopper, Users, Utensils, Wine, type LucideIcon } from "lucide-react";
 import { useRef } from "react";
-import { invitation, type TimelineIcon } from "@/config/invitation";
+import { invitation, type TimelineIcon, type TimelineItem } from "@/config/invitation";
+import { useSeen } from "@/hooks/useSeen";
 import { Reveal } from "./Reveal";
 import { SectionTitle } from "./SectionTitle";
 
@@ -16,6 +17,36 @@ const ICONS: Record<TimelineIcon, LucideIcon> = {
   cake: Cake,
   music: Music,
 };
+
+function TimelineRow({ item, index }: { item: TimelineItem; index: number }) {
+  const Icon = ICONS[item.icon] ?? PartyPopper;
+  const [ref, seen] = useSeen<HTMLLIElement>(50);
+  return (
+    <li ref={ref} className="relative">
+      <div className="flex items-start gap-5">
+        <motion.div
+          initial="hidden"
+          animate={seen ? "show" : "hidden"}
+          variants={{
+            hidden: { opacity: 0, scale: 0.4, rotate: -120 },
+            show: { opacity: 1, scale: 1, rotate: 0, transition: { type: "spring", stiffness: 190, damping: 12, delay: 0.1 } },
+          }}
+          className="relative z-10 shrink-0"
+        >
+          <span className="pulse-ring absolute inset-0 rounded-full" style={{ animationDelay: `${index * 0.5}s` }} />
+          <div className="bg-gold-metal relative flex h-14 w-14 items-center justify-center rounded-full border-4 border-ruby-deep shadow-lg shadow-black/40">
+            <Icon className="h-6 w-6 text-ruby-deep" strokeWidth={2} />
+          </div>
+        </motion.div>
+        <Reveal x={40} y={0} delay={0.15} className="pt-1 text-left">
+          <p className="text-gold-metal font-display text-3xl font-bold">{item.time ?? "Por confirmar"}</p>
+          <h3 className="mt-1 font-label text-base font-semibold uppercase tracking-[0.18em] text-ivory">{item.title}</h3>
+          <p className="mt-2 text-sm leading-relaxed text-ivory/75">{item.description}</p>
+        </Reveal>
+      </div>
+    </li>
+  );
+}
 
 export function Timeline() {
   const { texts, timeline } = invitation;
@@ -38,34 +69,9 @@ export function Timeline() {
           />
 
           <ol className="space-y-12">
-            {items.map((item, i) => {
-              const Icon = ICONS[item.icon] ?? PartyPopper;
-              return (
-                <li key={item.id} className="relative">
-                  <div className="flex items-start gap-5">
-                    <motion.div
-                      initial={{ scale: 0, rotate: -120 }}
-                      whileInView={{ scale: 1, rotate: 0 }}
-                      viewport={{ once: true, margin: "-60px" }}
-                      transition={{ type: "spring", stiffness: 190, damping: 12, delay: 0.1 }}
-                      className="relative z-10 shrink-0"
-                    >
-                      <span className="pulse-ring absolute inset-0 rounded-full" style={{ animationDelay: `${i * 0.5}s` }} />
-                      <div className="bg-gold-metal relative flex h-14 w-14 items-center justify-center rounded-full border-4 border-ruby-deep shadow-lg shadow-black/40">
-                        <Icon className="h-6 w-6 text-ruby-deep" strokeWidth={2} />
-                      </div>
-                    </motion.div>
-                    <Reveal x={40} y={0} delay={0.15} className="pt-1 text-left">
-                      <p className="text-gold-metal font-display text-3xl font-bold">{item.time ?? "Por confirmar"}</p>
-                      <h3 className="mt-1 font-label text-base font-semibold uppercase tracking-[0.18em] text-ivory">
-                        {item.title}
-                      </h3>
-                      <p className="mt-2 text-sm leading-relaxed text-ivory/75">{item.description}</p>
-                    </Reveal>
-                  </div>
-                </li>
-              );
-            })}
+            {items.map((item, i) => (
+              <TimelineRow key={item.id} item={item} index={i} />
+            ))}
           </ol>
         </div>
       </div>

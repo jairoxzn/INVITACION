@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { invitation } from "@/config/invitation";
+import { useSeen } from "@/hooks/useSeen";
 import { Rose, Sparkles } from "./Decor";
 import { Photo } from "./Photo";
 import { SectionTitle } from "./SectionTitle";
@@ -14,6 +15,7 @@ export function Gallery() {
   const { texts, gallery } = invitation;
   const [open, setOpen] = useState<number | null>(null);
   const [dir, setDir] = useState(1);
+  const [sectionRef, seen] = useSeen<HTMLElement>(60);
 
   const go = useCallback(
     (step: number) => {
@@ -44,21 +46,19 @@ export function Gallery() {
   if (gallery.length === 0) return null;
 
   return (
-    <section id="galeria" className="bg-ivory-section relative overflow-hidden px-4 py-20">
+    <section ref={sectionRef} id="galeria" className="bg-ivory-section relative overflow-hidden px-4 py-20">
       <Sparkles count={10} />
       <motion.div
-        initial={{ scale: 0, rotate: -90, opacity: 0 }}
-        whileInView={{ scale: 1, rotate: -10, opacity: 1 }}
-        viewport={{ once: true }}
+        initial={{ scale: 0.3, rotate: -90, opacity: 0 }}
+        animate={seen ? { scale: 1, rotate: -10, opacity: 1 } : undefined}
         transition={{ type: "spring", stiffness: 70, damping: 12 }}
         className="absolute -left-8 top-2 w-28"
       >
         <Rose className="float-y w-full" style={{ "--tilt": "5deg" } as React.CSSProperties} />
       </motion.div>
       <motion.div
-        initial={{ scale: 0, rotate: 90, opacity: 0 }}
-        whileInView={{ scale: 1, rotate: 25, opacity: 1 }}
-        viewport={{ once: true }}
+        initial={{ scale: 0.3, rotate: 90, opacity: 0 }}
+        animate={seen ? { scale: 1, rotate: 25, opacity: 1 } : undefined}
         transition={{ type: "spring", stiffness: 70, damping: 12, delay: 0.15 }}
         className="absolute -right-9 top-6 w-24"
       >

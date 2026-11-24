@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import type { CSSProperties } from "react";
+import { useSeen } from "@/hooks/useSeen";
 
 /* ============================================================
  *  Elementos decorativos (SVG/CSS): laurel con 50, confeti,
@@ -55,7 +56,8 @@ export function Laurel({
 
   const textFill = tone === "light" ? "#FFF9F0" : "#7A0C14";
 
-  const vp = { once: true, margin: "-80px" } as const;
+  const [ref, seen] = useSeen<SVGSVGElement>(60);
+  const state = seen ? "show" : "hidden";
 
   const branch = (mirror: boolean) => (
     <g transform={mirror ? "translate(300 0) scale(-1 1)" : undefined}>
@@ -65,10 +67,12 @@ export function Laurel({
         stroke={`url(#${GOLD_GRADIENT_ID})`}
         strokeWidth="2.2"
         strokeLinecap="round"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={vp}
-        transition={{ duration: 1.6, ease: "easeInOut" }}
+        initial="hidden"
+        animate={state}
+        variants={{
+          hidden: { pathLength: 0 },
+          show: { pathLength: 1, transition: { duration: 1.6, ease: "easeInOut" } },
+        }}
       />
       {leaves.map((l, i) => (
         <g key={i} transform={`rotate(${l.rot} ${l.x} ${l.y})`}>
@@ -78,11 +82,12 @@ export function Laurel({
             rx={5.2 * l.s}
             ry={15 * l.s}
             fill={`url(#${GOLD_GRADIENT_ID})`}
-            style={{ transformBox: "fill-box", transformOrigin: "50% 100%" }}
-            initial={{ scale: 0, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 0.95 }}
-            viewport={vp}
-            transition={{ delay: 0.25 + i * 0.045, type: "spring", stiffness: 210, damping: 13 }}
+            initial="hidden"
+            animate={state}
+            variants={{
+              hidden: { opacity: 0 },
+              show: { opacity: 0.95, transition: { delay: 0.25 + i * 0.05, duration: 0.45 } },
+            }}
           />
         </g>
       ))}
@@ -90,7 +95,7 @@ export function Laurel({
   );
 
   return (
-    <svg viewBox="0 0 300 300" className={className} role="img" aria-label={`${number} ${caption}`}>
+    <svg ref={ref} viewBox="0 0 300 300" className={className} role="img" aria-label={`${number} ${caption}`}>
       {branch(false)}
       {branch(true)}
       <motion.text
@@ -99,12 +104,14 @@ export function Laurel({
         textAnchor="middle"
         fontSize="92"
         fontWeight="700"
-        style={{ fontFamily: "var(--font-playfair), Georgia, serif", transformBox: "fill-box", transformOrigin: "center" }}
+        style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
         fill={`url(#${GOLD_GRADIENT_ID})`}
-        initial={{ scale: 0.4, opacity: 0 }}
-        whileInView={{ scale: 1, opacity: 1 }}
-        viewport={vp}
-        transition={{ delay: 0.9, type: "spring", stiffness: 140, damping: 11 }}
+        initial="hidden"
+        animate={state}
+        variants={{
+          hidden: { opacity: 0 },
+          show: { opacity: 1, transition: { delay: 0.8, duration: 0.8 } },
+        }}
       >
         {number}
       </motion.text>
@@ -116,10 +123,12 @@ export function Laurel({
         letterSpacing="9"
         style={{ fontFamily: "var(--font-cinzel), Georgia, serif" }}
         fill={textFill}
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={vp}
-        transition={{ delay: 1.5, duration: 0.8 }}
+        initial="hidden"
+        animate={state}
+        variants={{
+          hidden: { opacity: 0 },
+          show: { opacity: 1, transition: { delay: 1.4, duration: 0.8 } },
+        }}
       >
         {caption}
       </motion.text>
@@ -229,33 +238,34 @@ export function Rose({ className = "", style }: { className?: string; style?: CS
 
 /* ---------- Divisor dorado (se dibuja al aparecer) ---------- */
 export function GoldDivider({ className = "" }: { className?: string }) {
-  const vp = { once: true } as const;
+  const [ref, seen] = useSeen<HTMLDivElement>(30);
+  const state = seen ? "show" : "hidden";
   return (
-    <div className={`flex items-center justify-center gap-3 ${className}`} aria-hidden>
+    <div ref={ref} className={`flex items-center justify-center gap-3 ${className}`} aria-hidden>
       <motion.span
         className="h-px w-14 origin-right bg-gradient-to-r from-transparent to-gold"
-        initial={{ scaleX: 0 }}
-        whileInView={{ scaleX: 1 }}
-        viewport={vp}
-        transition={{ duration: 0.9, delay: 0.2 }}
+        initial="hidden"
+        animate={state}
+        variants={{ hidden: { scaleX: 0.05, opacity: 0 }, show: { scaleX: 1, opacity: 1, transition: { duration: 0.9, delay: 0.2 } } }}
       />
       <motion.svg
         width="14"
         height="14"
         viewBox="0 0 14 14"
-        initial={{ scale: 0, rotate: -180 }}
-        whileInView={{ scale: 1, rotate: 0 }}
-        viewport={vp}
-        transition={{ type: "spring", stiffness: 160, damping: 12, delay: 0.1 }}
+        initial="hidden"
+        animate={state}
+        variants={{
+          hidden: { scale: 0.3, rotate: -180, opacity: 0 },
+          show: { scale: 1, rotate: 0, opacity: 1, transition: { type: "spring", stiffness: 160, damping: 12, delay: 0.1 } },
+        }}
       >
         <path d="M7 0 14 7 7 14 0 7Z" fill={`url(#${GOLD_GRADIENT_ID})`} />
       </motion.svg>
       <motion.span
         className="h-px w-14 origin-left bg-gradient-to-l from-transparent to-gold"
-        initial={{ scaleX: 0 }}
-        whileInView={{ scaleX: 1 }}
-        viewport={vp}
-        transition={{ duration: 0.9, delay: 0.2 }}
+        initial="hidden"
+        animate={state}
+        variants={{ hidden: { scaleX: 0.05, opacity: 0 }, show: { scaleX: 1, opacity: 1, transition: { duration: 0.9, delay: 0.2 } } }}
       />
     </div>
   );
